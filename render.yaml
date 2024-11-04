@@ -7,3 +7,5 @@ services:
     envVars:
       - key: PYTHON_VERSION
         value: 3.9.0
+      - key: TENSORFLOW_VERSION
+        value: 2.10.0

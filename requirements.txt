@@ -1,9 +1,10 @@
 flask
 flask-socketio
-opencv-python
+opencv-python-headless
 pandas
 numpy
 deepface
 Pillow
 gunicorn
-eventlet 
+eventlet
+tensorflow-cpu 
