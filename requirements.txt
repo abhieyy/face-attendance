@@ -8,4 +8,5 @@ Pillow
 gunicorn
 eventlet
 tensorflow==2.13.0
-tf-keras 
+tf-keras
+scikit-learn
