@@ -46,22 +46,37 @@ def reset_attendance():
     print("Attendance file has been reset.")
 
 def load_known_faces():
-    known_face_encodings.clear()
-    known_face_names.clear()
-    for person_name in os.listdir(KNOWN_FACES_DIR):
-        person_dir = os.path.join(KNOWN_FACES_DIR, person_name)
-        if os.path.isdir(person_dir):
-            for filename in os.listdir(person_dir):
-                if allowed_file(filename):
-                    image_path = os.path.join(person_dir, filename)
-                    try:
-                        embedding = DeepFace.represent(image_path, model_name='VGG-Face')[0]["embedding"]
-                        known_face_encodings.append(embedding)
-                        known_face_names.append(person_name)
-                        print(f"Loaded face encoding for {person_name}")
-                    except Exception as e:
-                        print(f"Error processing {filename}: {str(e)}")
-    print(f"Loaded {len(known_face_encodings)} face encodings")
+    try:
+        print("Loading known faces...")  # Debug log
+        known_face_encodings.clear()
+        known_face_names.clear()
+        
+        for person_name in os.listdir(KNOWN_FACES_DIR):
+            person_dir = os.path.join(KNOWN_FACES_DIR, person_name)
+            print(f"Processing directory: {person_dir}")  # Debug log
+            
+            if os.path.isdir(person_dir):
+                for filename in os.listdir(person_dir):
+                    if allowed_file(filename):
+                        image_path = os.path.join(person_dir, filename)
+                        try:
+                            # Load and encode face
+                            img = cv2.imread(image_path)
+                            face = DeepFace.detectFace(img, detector_backend="opencv")
+                            embedding = DeepFace.represent(face, model_name="VGG-Face", enforce_detection=False)[0]["embedding"]
+                            
+                            known_face_encodings.append(embedding)
+                            known_face_names.append(person_name)
+                            print(f"Successfully loaded face for {person_name}")  # Debug log
+                            
+                        except Exception as e:
+                            print(f"Error processing {image_path}: {str(e)}")  # Debug log
+                            continue
+        
+        print(f"Loaded {len(known_face_encodings)} faces for {len(set(known_face_names))} people")  # Debug log
+        
+    except Exception as e:
+        print(f"Error in load_known_faces: {str(e)}")  # Debug log
 
 def mark_attendance(name):
     print(f"Attempting to mark attendance for {name}")
