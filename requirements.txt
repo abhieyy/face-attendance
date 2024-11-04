@@ -1,0 +1,9 @@
+flask
+flask-socketio
+opencv-python
+pandas
+numpy
+deepface
+Pillow
+gunicorn
+eventlet 

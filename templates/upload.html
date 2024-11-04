@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Face Registration System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #00f7ff;
+            --secondary-color: #0a192f;
+            --accent-color: #64ffda;
+            --text-color: #e6f1ff;
+            --dark-bg: #020c1b;
+            --card-bg: rgba(2, 12, 27, 0.7);
+            --glow-shadow: 0 0 10px rgba(0, 247, 255, 0.5);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-color);
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(0, 247, 255, 0.1) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(100, 255, 218, 0.1) 0%, transparent 20%);
+        }
+
+        header {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            text-align: center;
+            border-bottom: 1px solid rgba(0, 247, 255, 0.2);
+            backdrop-filter: blur(10px);
+            margin-bottom: 2rem;
+        }
+
+        header h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2rem;
+            color: var(--primary-color);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: var(--glow-shadow);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .main-content {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .left-panel {
+            flex: 1;
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 15px;
+            border: 1px solid rgba(0, 247, 255, 0.1);
+            box-shadow: var(--glow-shadow);
+        }
+
+        .right-panel {
+            flex: 1;
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 15px;
+            border: 1px solid rgba(0, 247, 255, 0.1);
+            box-shadow: var(--glow-shadow);
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            color: var(--primary-color);
+            font-family: 'Orbitron', sans-serif;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            background: rgba(2, 12, 27, 0.5);
+            border: 2px solid var(--primary-color);
+            border-radius: 8px;
+            color: var(--text-color);
+            font-size: 16px;
+        }
+
+        .upload-area {
+            border: 2px dashed var(--primary-color);
+            padding: 2rem;
+            text-align: center;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .upload-area:hover {
+            background: rgba(0, 247, 255, 0.1);
+            box-shadow: var(--glow-shadow);
+        }
+
+        .upload-area i {
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .button {
+            padding: 1rem 2rem;
+            background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+            color: var(--dark-bg);
+            border: none;
+            border-radius: 8px;
+            font-family: 'Orbitron', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.8rem;
+            margin: 0.5rem;
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 20px rgba(0, 247, 255, 0.7);
+        }
+
+        .camera-container {
+            display: none;
+            margin-top: 1rem;
+            max-width: 400px;
+            margin: 1rem auto;
+        }
+
+        .camera-container.active {
+            display: block;
+        }
+
+        #video {
+            width: 100%;
+            border-radius: 8px;
+            border: 2px solid var(--primary-color);
+            margin-bottom: 1rem;
+            max-height: 300px;
+            object-fit: cover;
+        }
+
+        .preview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .preview-item {
+            position: relative;
+            aspect-ratio: 1;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 2px solid var(--primary-color);
+            box-shadow: var(--glow-shadow);
+        }
+
+        .preview-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .remove-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 25px;
+            height: 25px;
+            background: rgba(255, 0, 0, 0.8);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+            justify-content: center;
+        }
+
+        .section-title {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .button-container {
+            margin-top: 20px;
+            margin-bottom: 80px;
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+        .reset-button {
+            padding: 1rem 2rem;
+            background: linear-gradient(45deg, #ff4444, #cc0000);
+            color: var(--text-color);
+            border: none;
+            border-radius: 8px;
+            font-family: 'Orbitron', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+        .back-button {
+            padding: 1rem 2rem;
+            background: linear-gradient(45deg, #444444, #222222);
+            color: var(--text-color);
+            border: none;
+            border-radius: 8px;
+            font-family: 'Orbitron', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.8rem;
+            text-decoration: none;
+        }
+        .reset-button:hover, .back-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 20px rgba(255, 68, 68, 0.7);
+        }
+        .back-button:hover {
+            box-shadow: 0 0 20px rgba(68, 68, 68, 0.7);
+        }
+
+        .save-button-container {
+            position: fixed;
+            bottom: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            background: var(--card-bg);
+            padding: 0.5rem;
+            border-radius: 10px;
+            border: 1px solid rgba(0, 247, 255, 0.1);
+            box-shadow: var(--glow-shadow);
+        }
+
+        .save-button-container .button {
+            font-size: 1rem;
+            padding: 0.8rem 2rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1></i> Face Registration System</h1>
+    </header>
+
+    <div class="container">
+        <div class="main-content">
+            <div class="left-panel">
+                <div class="form-group">
+                    <label><i class="fas fa-user"></i> Person Name</label>
+                    <input type="text" id="personName" required placeholder="Enter person's name">
+                </div>
+
+                <div class="button-group">
+                    <button class="button" onclick="document.getElementById('fileInput').click()">
+                        <i class="fas fa-upload"></i> Upload Images
+                    </button>
+                    <button class="button" onclick="toggleCamera()">
+                        <i class="fas fa-camera"></i> Capture Image
+                    </button>
+                </div>
+
+                <input type="file" id="fileInput" multiple accept="image/*" style="display: none" onchange="handleFileSelect(this)">
+
+                <div class="camera-container" id="cameraContainer">
+                    <video id="video" autoplay></video>
+                    <button class="button" onclick="capturePhoto()">
+                        <i class="fas fa-camera"></i> Take Photo
+                    </button>
+                </div>
+            </div>
+
+            <div class="right-panel">
+                <h2 class="section-title"><i class="fas fa-images"></i> Selected Images for <span id="displayName">...</span></h2>
+                <div class="preview-grid" id="previewContainer"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="save-button-container">
+        <button class="button" onclick="submitPhotos()">
+            <i class="fas fa-save"></i> Save ID
+        </button>
+    </div>
+
+    <div class="button-container">
+        <form action="{{ url_for('reset_attendance_route') }}" method="POST">
+            <button type="submit" class="reset-button" onclick="return confirm('Are you sure you want to reset attendance? This cannot be undone.')">
+                <i class="fas fa-redo"></i> Reset Attendance
+            </button>
+        </form>
+        <a href="{{ url_for('home') }}" class="back-button">
+            <i class="fas fa-home"></i> Back to Main Page
+        </a>
+    </div>
+
+    <script>
+        let stream = null;
+        let capturedImages = [];
+
+        function toggleCamera() {
+            const cameraContainer = document.getElementById('cameraContainer');
+            if (cameraContainer.classList.contains('active')) {
+                stopCamera();
+                cameraContainer.classList.remove('active');
+            } else {
+                startCamera();
+                cameraContainer.classList.add('active');
+            }
+        }
+
+        async function startCamera() {
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                document.getElementById('video').srcObject = stream;
+            } catch (err) {
+                console.error("Error accessing camera:", err);
+                alert("Error accessing camera");
+            }
+        }
+
+        function stopCamera() {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                stream = null;
+            }
+        }
+
+        function handleFileSelect(input) {
+            const files = Array.from(input.files);
+            files.forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    addPreview(e.target.result);
+                }
+                reader.readAsDataURL(file);
+            });
+            updateDisplayName();
+        }
+
+        function capturePhoto() {
+            const video = document.getElementById('video');
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0);
+            const imageData = canvas.toDataURL('image/jpeg');
+            addPreview(imageData);
+            updateDisplayName();
+        }
+
+        function addPreview(imageData) {
+            const container = document.getElementById('previewContainer');
+            const div = document.createElement('div');
+            div.className = 'preview-item';
+            const index = capturedImages.length;
+            div.innerHTML = `
+                <img src="${imageData}">
+                <span class="remove-btn" onclick="removeCapturedPhoto(${index})">×</span>
+            `;
+            container.appendChild(div);
+            capturedImages.push(imageData);
+        }
+
+        function removeCapturedPhoto(index) {
+            capturedImages.splice(index, 1);
+            updateCapturedPhotosPreview();
+        }
+
+        function updateCapturedPhotosPreview() {
+            const container = document.getElementById('previewContainer');
+            container.innerHTML = '';
+            capturedImages.forEach((image, index) => {
+                const div = document.createElement('div');
+                div.className = 'preview-item';
+                div.innerHTML = `
+                    <img src="${image}">
+                    <span class="remove-btn" onclick="removeCapturedPhoto(${index})">×</span>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function submitPhotos() {
+            const personName = document.getElementById('personName').value;
+            if (!personName) {
+                alert('Please enter a person name');
+                return;
+            }
+            if (capturedImages.length === 0) {
+                alert('Please capture at least one photo');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('person_name', personName);
+            
+            capturedImages.forEach((imageData, index) => {
+                // Convert base64 to blob
+                const blob = dataURLtoBlob(imageData);
+                formData.append('files[]', blob, `capture${index}.jpg`);
+            });
+
+            fetch('/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(result => {
+                alert('Photos uploaded successfully');
+                capturedImages = [];
+                document.getElementById('previewContainer').innerHTML = '';
+                document.getElementById('personName').value = '';
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error uploading photos');
+            });
+        }
+
+        function dataURLtoBlob(dataURL) {
+            const arr = dataURL.split(',');
+            const mime = arr[0].match(/:(.*?);/)[1];
+            const bstr = atob(arr[1]);
+            let n = bstr.length;
+            const u8arr = new Uint8Array(n);
+            while(n--) {
+                u8arr[n] = bstr.charCodeAt(n);
+            }
+            return new Blob([u8arr], {type: mime});
+        }
+
+        function updateDisplayName() {
+            const personName = document.getElementById('personName').value;
+            const displayName = document.getElementById('displayName');
+            displayName.textContent = personName || '...';
+        }
+
+        document.getElementById('personName').addEventListener('input', updateDisplayName);
+
+        // Clean up camera when leaving page
+        window.onbeforeunload = function() {
+            stopCamera();
+        };
+    </script>
+</body>
+</html>
