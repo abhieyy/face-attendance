@@ -116,7 +116,12 @@ def handle_video_frame(data):
         image = Image.open(io.BytesIO(image_data))
         img = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
         
-        faces = DeepFace.extract_faces(img, detector_backend="opencv", enforce_detection=False)
+        # Replace extract_faces with detectFace
+        try:
+            face = DeepFace.detectFace(img, detector_backend="opencv")
+            faces = [{"face": face}]  # Wrap in similar format as before
+        except:
+            faces = []
         
         if faces:
             print("Face detected")
