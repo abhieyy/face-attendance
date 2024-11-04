@@ -3,8 +3,9 @@ flask-socketio
 opencv-python-headless
 pandas
 numpy
-deepface
+deepface==0.0.75
 Pillow
 gunicorn
 eventlet
-tensorflow-cpu 
+tensorflow==2.13.0
+tf-keras 
